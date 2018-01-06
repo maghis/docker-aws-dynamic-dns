@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# start cron
+crond;
+
+tail -qF /var/log/update;
