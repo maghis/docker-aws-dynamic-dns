@@ -1,17 +1,18 @@
 FROM armhf/alpine
 
 RUN apk --no-cache update && \
-    apk --no-cache add bash curl py-pip bind-tools
-
-RUN pip install awscli --upgrade --user
+    apk --no-cache add bash python py-pip bind-tools && \
+    pip install awscli --upgrade --user && \
+    apk del py-pip && \
+    rm -rf /var/cache/apk/*
 
 ENV PATH="~/.local/bin:${PATH}"
 
-RUN mkfifo /var/log/update
 COPY update-dns /etc/periodic/15min/update-dns
-RUN chmod a+x /etc/periodic/15min/update-dns
-
 COPY daemon /usr/sbin/daemon
-RUN chmod +x /usr/sbin/daemon
+
+RUN mkfifo /var/log/update && \
+    chmod a+x /etc/periodic/15min/update-dns && \
+    chmod +x /usr/sbin/daemon
 
 CMD ["daemon"]
